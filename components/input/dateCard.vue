@@ -41,7 +41,7 @@ const updateValue = (event: Event) => {
 </script>
 
 <template>
-  <div class="w-3/4 flex gap-2 flex-col mb-5">
+  <div class="w-2/4 flex gap-2 flex-col mb-5">
     <label class="font-semibold">{{ props.label }}</label>
     <input 
       class="bg-gray-900 w-full h-11 border-gray-700 border-2 rounded-lg

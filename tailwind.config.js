@@ -15,7 +15,11 @@ export default {
           800: '#1F2937',
           900: '#111827',
         }
-      }
+      },
+      backgroundImage: {
+        'card-bg': "url('/background-blur.png')",
+        'cardback-bg': "url('/backgroundback-blur.png')",
+      },
     },
   },
   plugins: [],

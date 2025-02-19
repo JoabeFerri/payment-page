@@ -4,7 +4,7 @@
 <template>
 <div class="w-full h-screen flex justify-center items-center">
     <div class="flex justify-center flex-col">
-        <p class="text-white text-lg">Link Three</p>
+        <p class="text-white text-lg">Em construção</p>
     </div>
 </div>
 </template>

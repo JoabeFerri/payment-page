@@ -1,7 +1,7 @@
 import asaasApi from '@/utils/asaas';
 import { defineEventHandler, readBody } from 'h3';
 
-interface SubscriptionRequest {
+interface PaymentRequest {
   name: string;
   cpf: string;
   email: string;
@@ -9,16 +9,16 @@ interface SubscriptionRequest {
   planName: string;
   value: number;
   dueDate: string;
-  discount: number;
+  isSubscription: boolean;
 }
 
-interface SubscriptionResponse {
+interface PaymentResponse {
   id: string;
-  link: string; // Link para pagamento ou detalhes da assinatura
+  link: string;
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<SubscriptionRequest>(event);
+  const body = await readBody<PaymentRequest>(event);
 
   try {
     // Criar o cliente
@@ -31,22 +31,30 @@ export default defineEventHandler(async (event) => {
 
     const customerId = customerResponse.data.id;
 
-    // Criar assinatura para o cliente
-    const subscriptionResponse = await asaasApi.post<SubscriptionResponse>('/subscriptions', {
-      customer: customerId, // ID do cliente
-      plan: body.planName,   // Nome ou ID do plano
-      value: body.value,     // Valor da assinatura
-      dueDate: body.dueDate, // Data de vencimento da primeira cobrança
-      cycle: "MONTHLY",
-      discount: {
-        value: 0,
-        dueDateLimitDays: 3
-      },
-      billingType: 'CREDIT_CARD',
-      description: 'Sua assinatura mensal sobre nossos produtos foram confirmados com sucesso!',
-    });
+    let paymentResponse;
 
-    return subscriptionResponse.data;
+    if (body.isSubscription) {
+      // Criar assinatura para o cliente
+      paymentResponse = await asaasApi.post<PaymentResponse>('/subscriptions', {
+        customer: customerId,
+        billingType: 'CREDIT_CARD',
+        value: body.value,
+        nextDueDate: body.dueDate,
+        cycle: 'MONTHLY',
+        description: 'Sua assinatura mensal sobre nossos produtos foram confirmados com sucesso!',
+      });
+    } else {
+      // Criar pagamento único para o cliente
+      paymentResponse = await asaasApi.post<PaymentResponse>('/payments', {
+        customer: customerId,
+        billingType: 'CREDIT_CARD',
+        value: body.value,
+        dueDate: body.dueDate,
+        description: 'Seu pagamento único foi confirmado com sucesso!',
+      });
+    }
+
+    return paymentResponse.data;
   } catch (error: any) {
     return { error: error.response?.data || error.message };
   }

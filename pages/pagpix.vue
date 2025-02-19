@@ -80,9 +80,6 @@ const copyToClipboard = async () => {
     <div class="bg-gray-800 p-8 border-gray-700 border-2 rounded-xl">
               <!-- Exibir QR Code -->
       <div v-if="qrCode" class="mt-6 flex flex-col items-center">
-        <UHorizontalNavigation :links="links" class="mb-6 border-gray-200 dark:border-gray-800"
-        :ui="{ active: 'after:bg-purple-500 dark:after:bg-purple-500' }" />
-
         <h2 class="text-white text-lg mb-3">Escaneie o QR Code para pagar</h2>
         <img :src="`data:image/png;base64,${qrCode}`" alt="QR Code Pix" class="w-48 h-48 rounded-lg shadow-lg" />
 

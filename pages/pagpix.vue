@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 const nameUser = ref('');
 const cpfUser = ref('');
 const emailUser = ref('');
 const cellphoneUser = ref('');
+const pix = ref<{id: string; invoiceUrl: string; pixQrCode: { payload: string; encodedImage: string }}|null>();
 const value = ref(100.00); // Valor do pagamento
 const qrCode = ref<string | null>(null);
 const copyPasteCode = ref<string | null>(null);
@@ -52,9 +53,10 @@ const createPixPayment = async () => {
       }
     });
 
-    qrCode.value = response.pixQrCode.encodedImage;
     copyPasteCode.value = response.pixQrCode.payload;
-    console.log('Pagamento via Pix gerado:', response);
+    sessionStorage.setItem('pix', JSON.stringify(response));
+    if(sessionStorage.getItem("pix"))
+      pix.value = JSON.parse(sessionStorage.getItem("pix")?? '');
   } catch (error) {
     console.error('Erro ao gerar pagamento via Pix:', error);
   } finally {
@@ -73,15 +75,21 @@ const copyToClipboard = async () => {
     }
   }
 };
+
+onMounted(() => {
+  if(sessionStorage.getItem("pix"))
+    pix.value = JSON.parse(sessionStorage.getItem("pix")?? '');
+
+});
 </script>
 
 <template>
   <div class="w-full h-auto flex justify-center items-center">
     <div class="bg-gray-800 p-8 border-gray-700 border-2 rounded-xl">
               <!-- Exibir QR Code -->
-      <div v-if="qrCode" class="mt-6 flex flex-col items-center">
+      <div v-if="pix" class="mt-6 flex flex-col items-center">
         <h2 class="text-white text-lg mb-3">Escaneie o QR Code para pagar</h2>
-        <img :src="`data:image/png;base64,${qrCode}`" alt="QR Code Pix" class="w-48 h-48 rounded-lg shadow-lg" />
+        <img :src="`data:image/png;base64,${pix.pixQrCode.encodedImage}`" alt="QR Code Pix" class="w-48 h-48 rounded-lg shadow-lg" />
 
         <!-- Código Copia e Cola -->
         <div class="mt-4 p-3 bg-gray-700 rounded-md w-full text-center">

@@ -6,4 +6,11 @@ export default defineNuxtConfig({
   alias: {
     css: "/<rootDir>/assets/css",
   },
+  vite: {
+    server: {
+      allowedHosts: [
+        'escargot-aware-slug.ngrok-free.app'
+      ]
+    }
+  },
 })

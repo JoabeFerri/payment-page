@@ -117,6 +117,22 @@ const createPayment = async () => {
     isLoading.value = false;
   }
 };
+
+const createPaymentStripe = async () => {
+  isLoading.value = true
+
+  try {
+    const payment = await $fetch('/api/stripe-create-session', {
+      method: 'POST',
+    });
+    await navigateTo(payment?.url, {external: true})
+  } catch (error) {
+    console.error("Erro ao criar pagamento:", error);
+  } finally {
+
+  }
+
+}
 </script>
 
 <template>
@@ -187,6 +203,7 @@ const createPayment = async () => {
         </div>
     
         <ButtonPrimary class="w-full mt-4" :disabled="isPaymentDisabled" @click="createPayment" :label="isSubscription ? 'Assinar' : 'Pagar'"/>
+        <ButtonPrimary class="w-full mt-4" @click="createPaymentStripe" label="Pagar com Stripe"/>
     </div>
 
   </div>
